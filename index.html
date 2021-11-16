@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!--插入 reset CSS-->
+  <link rel="stylesheet" href="../css/reset.css">
+  <!--插入 自訂的 CSS-->
+  <link rel="stylesheet" href="../css/all.css">
+  <!--頁面標籤 favicon-->
+  <link rel="shortcut icon" href="../img/BMICLogo.png" type="image/x-icon">
+  <title>BMI 計算器</title>
+</head>
+<body class="flex-csbc">
+  <div class="header flex-rcc">
+    <div class="calculator flex-rcc">
+      <div class="icon"></div>
+      <div class="input-area">
+        <div class="item">
+          <div class="item-title">身高 cm</div>
+          <input id="tall" class="item-field" placeholder="請在此輸入身高"></input>
+        </div>
+        <div class="space"></div>
+        <div class="item">
+          <div class="item-title">體重 kg</div>
+          <input id="weight" class="item-field" placeholder="請在此輸入體重"></input>
+        </div>
+      </div>
+      <div class="output-area">
+        <div class="btn-calc flex-rcc user-select-none">看結果</div>
+        <div class="show-result flex-rlc hide">
+          <div class="result-circle flex-ccc">
+            <div class="number">
+              <span id="bmi"></span>
+              <div class="unit">BMI</div>
+            </div>
+          </div>
+          <div class="result-text"></div>
+          <button class="btn-recalc"></button>
+          <button class="btn-save"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="content flex-csac">
+    <div class="title">BMI 換算紀錄</div>
+    <button class="clearLocalStorage">清除換算紀錄</button>
+    <ul class="history-list user-select-none"></ul>
+  </div>
+  <div class="footer flex-rcc">
+    <div class="icon"></div>
+    <p>by 謝宗佑</p>
+
+    <!-- 載入萬惡的 js -->
+    <script src="../js/all.js"></script>
+  </div>
+</body>
+</html>

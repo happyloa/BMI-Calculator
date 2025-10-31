@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme inline {
+  --animate-spin-slow: spin 1.5s linear infinite;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  min-width: 768px;
+}

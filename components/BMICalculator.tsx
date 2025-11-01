@@ -266,7 +266,7 @@ export default function BMICalculator() {
             <button
               type="button"
               onClick={handleClearHistory}
-              className="rounded-full border border-[#333029] bg-[#FFD466] px-6 py-2 text-base font-medium text-[#424242] transition hover:bg-[#DEA821] active:translate-y-[1px]"
+              className="cursor-pointer rounded-full border border-[#333029] bg-[#FFD466] px-6 py-2 text-base font-medium text-[#424242] transition hover:bg-[#DEA821] active:translate-y-[1px]"
             >
               清除換算紀錄
             </button>

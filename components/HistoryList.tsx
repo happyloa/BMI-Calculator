@@ -71,7 +71,7 @@ export default function HistoryList({ records, onDelete }: HistoryListProps) {
               <button
                 type="button"
                 onClick={() => onDelete(record.id)}
-                className="rounded-full border border-[#C14646] px-4 py-1 text-sm text-[#C14646] transition hover:bg-[#C14646] hover:text-white"
+                className="cursor-pointer rounded-full border border-[#C14646] px-4 py-1 text-sm text-[#C14646] transition hover:bg-[#C14646] hover:text-white"
               >
                 刪除
               </button>

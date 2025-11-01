@@ -27,12 +27,12 @@ export default function HistoryList({ records, onDelete }: HistoryListProps) {
       <thead className="bg-[#FFD366]/60 text-sm uppercase tracking-wide text-[#424242]">
         <tr>
           <th scope="col" className="w-2" aria-label="顏色指標" />
-          <th scope="col" className="px-4 py-3 text-center">狀態</th>
-          <th scope="col" className="px-4 py-3 text-center">BMI</th>
-          <th scope="col" className="px-4 py-3 text-center">體重 (kg)</th>
-          <th scope="col" className="px-4 py-3 text-center">身高 (cm)</th>
+          <th scope="col" className="whitespace-nowrap px-4 py-3 text-center">狀態</th>
+          <th scope="col" className="whitespace-nowrap px-4 py-3 text-center">BMI</th>
+          <th scope="col" className="whitespace-nowrap px-4 py-3 text-center">體重 (kg)</th>
+          <th scope="col" className="whitespace-nowrap px-4 py-3 text-center">身高 (cm)</th>
           <th scope="col" className="px-4 py-3 text-center">紀錄時間</th>
-          <th scope="col" className="px-4 py-3 text-center">操作</th>
+          <th scope="col" className="whitespace-nowrap px-4 py-3 text-center">操作</th>
         </tr>
       </thead>
       <tbody>
@@ -53,21 +53,21 @@ export default function HistoryList({ records, onDelete }: HistoryListProps) {
                 );
               })()}
             </td>
-            <td className="px-4 py-4 text-center text-lg font-medium">{record.description}</td>
-            <td className="px-4 py-4 text-center">
+            <td className="whitespace-nowrap px-4 py-4 text-center text-lg font-medium">{record.description}</td>
+            <td className="whitespace-nowrap px-4 py-4 text-center">
               <span className="mr-1 text-sm text-[#424242]">BMI</span>
               {record.bmi}
             </td>
-            <td className="px-4 py-4 text-center">
+            <td className="whitespace-nowrap px-4 py-4 text-center">
               <span className="mr-1 text-sm text-[#424242]">weight</span>
               {record.weight}
             </td>
-            <td className="px-4 py-4 text-center">
+            <td className="whitespace-nowrap px-4 py-4 text-center">
               <span className="mr-1 text-sm text-[#424242]">height</span>
               {record.height}
             </td>
             <td className="px-4 py-4 text-center text-sm text-[#424242]">{record.date}</td>
-            <td className="px-4 py-4 text-center">
+            <td className="whitespace-nowrap px-4 py-4 text-center">
               <button
                 type="button"
                 onClick={() => onDelete(record.id)}

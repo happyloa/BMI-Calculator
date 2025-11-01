@@ -206,7 +206,7 @@ export default function BMICalculator() {
   return (
     <article className="flex w-full flex-col items-center">
       <header className="w-full bg-[#424242] text-white">
-        <div className="mx-auto flex w-full max-w-5xl flex-col gap-10 px-6 py-12 lg:flex-row lg:items-center lg:justify-between">
+        <div className="mx-auto flex w-full max-w-5xl flex-col items-center gap-10 px-6 py-12 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col items-center gap-6 text-center lg:flex-row lg:items-center lg:gap-8 lg:text-left">
             <div
               className="h-[88px] w-[88px] flex-shrink-0 bg-contain bg-no-repeat sm:h-[104px] sm:w-[104px] lg:h-[117px] lg:w-[117px]"
@@ -221,7 +221,7 @@ export default function BMICalculator() {
 
           <form
             onSubmit={handleSubmit}
-            className="w-full max-w-xl space-y-6 rounded-3xl bg-[rgba(0,0,0,0.35)] p-6 backdrop-blur-sm sm:p-8"
+            className="mx-auto w-full max-w-xl space-y-6 rounded-3xl bg-[rgba(0,0,0,0.35)] p-6 backdrop-blur-sm sm:p-8 lg:mx-0"
           >
             <div className="grid gap-6 sm:grid-cols-2">
               <InputField

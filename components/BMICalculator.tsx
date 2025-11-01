@@ -1,5 +1,7 @@
 "use client";
 
+// 主要的 BMI 計算互動式元件，負責輸入、計算與紀錄管理。
+
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 
 import HistoryList from "@/components/HistoryList";
@@ -7,6 +9,7 @@ import InputField from "@/components/InputField";
 import ResultDisplay from "@/components/ResultDisplay";
 import { BMIHistoryRecord, BMIResult } from "@/types/bmi";
 
+// 各 BMI 區間的設定，包含顏色與描述文字。
 const BMI_SETTINGS = [
   { maxBMI: 18.5, color: "#31BAF9", description: "過輕" },
   { maxBMI: 24, color: "#86D73E", description: "理想" },
@@ -14,6 +17,7 @@ const BMI_SETTINGS = [
   { maxBMI: Number.POSITIVE_INFINITY, color: "#FF1200", description: "肥胖" },
 ] as const;
 
+// 儲存在 sessionStorage 中的 key 與最大歷史筆數。
 const HISTORY_STORAGE_KEY = "history";
 const MAX_HISTORY_LENGTH = 15;
 
@@ -31,6 +35,7 @@ type LegacyHistory = {
   >;
 };
 
+// 將舊版或不合法的歷史資料轉換成目前使用的陣列格式。
 function normalizeHistory(value: unknown): BMIHistoryRecord[] {
   if (!value) {
     return [];
@@ -79,14 +84,17 @@ function normalizeHistory(value: unknown): BMIHistoryRecord[] {
   return [];
 }
 
+// 依照 BMI 值找到對應的設定索引。
 function determineLevel(bmi: number): number {
   return BMI_SETTINGS.findIndex((setting) => bmi < setting.maxBMI);
 }
 
 export default function BMICalculator() {
+  // 儲存使用者當前的身高、體重輸入值與計算結果。
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
   const [result, setResult] = useState<BMIResult | null>(null);
+  // 歷史紀錄與載入狀態用於控制序列化流程。
   const [history, setHistory] = useState<BMIHistoryRecord[]>([]);
   const [isHistoryLoaded, setIsHistoryLoaded] = useState(false);
 
@@ -94,6 +102,7 @@ export default function BMICalculator() {
     if (typeof window === "undefined") {
       return;
     }
+    // 進行序列化讀取，並兼容舊版 localStorage 的資料格式。
     try {
       const sessionValue = window.sessionStorage.getItem(HISTORY_STORAGE_KEY);
       const localValue =
@@ -108,6 +117,7 @@ export default function BMICalculator() {
       }
 
       if (localValue) {
+        // 轉移舊版的 localStorage 紀錄至 sessionStorage，避免重複儲存。
         window.localStorage.removeItem(HISTORY_STORAGE_KEY);
       }
     } catch (error) {
@@ -121,6 +131,7 @@ export default function BMICalculator() {
     if (!isHistoryLoaded || typeof window === "undefined") {
       return;
     }
+    // 僅在載入完成後同步最新的歷史紀錄至 sessionStorage。
     try {
       window.sessionStorage.setItem(
         HISTORY_STORAGE_KEY,
@@ -135,6 +146,7 @@ export default function BMICalculator() {
     const parsedHeight = parseFloat(height);
     const parsedWeight = parseFloat(weight);
 
+    // 若輸入值不是有效數字則清除結果，避免顯示過期資料。
     if (!parsedHeight || !parsedWeight) {
       setResult(null);
       return;
@@ -142,6 +154,7 @@ export default function BMICalculator() {
 
     const meter = parsedHeight / 100;
     const bmiValue = parsedWeight / (meter * meter);
+    // 四捨五入至小數第二位，與 UI 顯示保持一致。
     const bmiRounded = Math.round(bmiValue * 100) / 100;
     const bmiLevel = determineLevel(bmiRounded);
     const { color, description } =
@@ -162,6 +175,7 @@ export default function BMICalculator() {
   const handleSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
+      // submit 事件主要來自於「看結果」按鈕。
       handleCalculate();
     },
     [handleCalculate],
@@ -172,6 +186,7 @@ export default function BMICalculator() {
       return;
     }
 
+    // 以 randomUUID 優先產生唯一 ID，回退至 timestamp+隨機字串。
     const id =
       typeof crypto !== "undefined" && "randomUUID" in crypto
         ? crypto.randomUUID()
@@ -190,14 +205,17 @@ export default function BMICalculator() {
   const handleClearHistory = useCallback(() => {
     setHistory([]);
     if (typeof window !== "undefined") {
+      // 同步清除瀏覽器儲存，避免重新載入後紀錄又出現。
       window.sessionStorage.removeItem(HISTORY_STORAGE_KEY);
     }
   }, []);
 
   const handleDeleteRecord = useCallback((id: string) => {
+    // 使用純函式方式刪除指定 ID 的紀錄，確保 state 更新正確。
     setHistory((previous) => previous.filter((record) => record.id !== id));
   }, []);
 
+  // 頁首圖示使用 useMemo 避免在每次 render 時重新建立物件。
   const headerIconStyle = useMemo(
     () => ({ backgroundImage: "url('/img/BMICLogo.png')" }),
     []

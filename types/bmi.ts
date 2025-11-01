@@ -10,4 +10,5 @@ export interface BMIResult {
 export interface BMIHistoryRecord extends BMIResult {
   id: string;
   date: string;
+  createdAt: string;
 }

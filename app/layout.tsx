@@ -1,5 +1,13 @@
 import type { Metadata } from "next";
+import { Noto_Sans_TC } from "next/font/google";
+
 import "./globals.css";
+
+const notoSans = Noto_Sans_TC({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "BMI 計算器",
@@ -13,7 +21,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-Hant">
-      <body className="min-h-screen bg-white font-sans text-base text-[#424242]">
+      <body
+        className={`${notoSans.className} min-h-screen bg-white text-base text-[#424242]`}
+      >
         {children}
       </body>
     </html>

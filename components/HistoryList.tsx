@@ -1,3 +1,4 @@
+// 顯示換算完成後的 BMI 歷史紀錄表格。
 import { BMIHistoryRecord } from "@/types/bmi";
 
 interface HistoryListProps {
@@ -5,6 +6,7 @@ interface HistoryListProps {
   onDelete: (id: string) => void;
 }
 
+// 根據 BMI 等級套用不同的旗標陰影與顏色，維持視覺一致性。
 const flagStyles = [
   { className: "shadow-[2px_0_3px_0_rgba(49,186,249,0.29)]", fallback: "#31BAF9" },
   { className: "shadow-[2px_0_3px_0_rgba(133,215,63,0.29)]", fallback: "#86D73E" },
@@ -43,6 +45,7 @@ export default function HistoryList({ records, onDelete }: HistoryListProps) {
           >
             <td className="align-middle">
               {(() => {
+                // 每列建立對應的旗標樣式，未設定時退回到安全預設值。
                 const flag = flagStyles[record.bmiLevel] ?? flagStyles[1];
                 return (
                   <span
@@ -71,6 +74,7 @@ export default function HistoryList({ records, onDelete }: HistoryListProps) {
               <button
                 type="button"
                 onClick={() => onDelete(record.id)}
+                // 交由父元件處理刪除邏輯，避免在表格中操作 state。
                 className="cursor-pointer rounded-full border border-[#C14646] px-4 py-1 text-sm text-[#C14646] transition hover:bg-[#C14646] hover:text-white"
               >
                 刪除

@@ -1,3 +1,4 @@
+// 頁面底部的簡易資訊列，展示作者資訊與品牌圖示。
 export default function Footer() {
   return (
     <footer className="flex h-[90px] w-full items-center justify-center bg-[#FFD366]">

@@ -1,3 +1,4 @@
+// 共用的輸入欄位元件，包裝身高與體重的輸入表單。
 interface InputFieldProps {
   id: string;
   label: string;
@@ -19,6 +20,7 @@ export default function InputField({
       <input
         id={id}
         value={value}
+        // 直接透過 onChange 回傳字串，方便父層同步更新狀態。
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         inputMode="decimal"

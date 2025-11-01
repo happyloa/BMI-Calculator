@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 
 import HistoryList from "@/components/HistoryList";
 import InputField from "@/components/InputField";
@@ -15,6 +15,7 @@ const BMI_SETTINGS = [
 ] as const;
 
 const HISTORY_STORAGE_KEY = "history";
+const MAX_HISTORY_LENGTH = 15;
 
 type LegacyHistory = {
   maxIdx: number;
@@ -94,10 +95,20 @@ export default function BMICalculator() {
       return;
     }
     try {
-      const raw = window.localStorage.getItem(HISTORY_STORAGE_KEY);
+      const sessionValue = window.sessionStorage.getItem(HISTORY_STORAGE_KEY);
+      const localValue =
+        typeof window.localStorage !== "undefined"
+          ? window.localStorage.getItem(HISTORY_STORAGE_KEY)
+          : null;
+      const raw = sessionValue ?? localValue;
+
       if (raw) {
         const parsed = JSON.parse(raw) as unknown;
-        setHistory(normalizeHistory(parsed));
+        setHistory(normalizeHistory(parsed).slice(0, MAX_HISTORY_LENGTH));
+      }
+
+      if (localValue) {
+        window.localStorage.removeItem(HISTORY_STORAGE_KEY);
       }
     } catch (error) {
       console.error("無法讀取歷史紀錄", error);
@@ -110,7 +121,14 @@ export default function BMICalculator() {
     if (!isHistoryLoaded || typeof window === "undefined") {
       return;
     }
-    window.localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
+    try {
+      window.sessionStorage.setItem(
+        HISTORY_STORAGE_KEY,
+        JSON.stringify(history.slice(0, MAX_HISTORY_LENGTH)),
+      );
+    } catch (error) {
+      console.error("無法儲存歷史紀錄", error);
+    }
   }, [history, isHistoryLoaded]);
 
   const handleCalculate = useCallback(() => {
@@ -141,6 +159,14 @@ export default function BMICalculator() {
     setResult(newResult);
   }, [height, weight]);
 
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      handleCalculate();
+    },
+    [handleCalculate],
+  );
+
   const handleSave = useCallback(() => {
     if (!result) {
       return;
@@ -158,14 +184,18 @@ export default function BMICalculator() {
       date,
     };
 
-    setHistory((previous) => [record, ...previous]);
+    setHistory((previous) => [record, ...previous].slice(0, MAX_HISTORY_LENGTH));
   }, [result]);
 
   const handleClearHistory = useCallback(() => {
     setHistory([]);
     if (typeof window !== "undefined") {
-      window.localStorage.removeItem(HISTORY_STORAGE_KEY);
+      window.sessionStorage.removeItem(HISTORY_STORAGE_KEY);
     }
+  }, []);
+
+  const handleDeleteRecord = useCallback((id: string) => {
+    setHistory((previous) => previous.filter((record) => record.id !== id));
   }, []);
 
   const headerIconStyle = useMemo(
@@ -174,63 +204,78 @@ export default function BMICalculator() {
   );
 
   return (
-    <div className="flex w-full flex-col items-center">
-      <header className="flex h-[300px] w-full items-center justify-center bg-[#424242]">
-        <div className="flex items-center">
-          <div
-            className="h-[117px] w-[117px] bg-contain bg-no-repeat"
-            style={headerIconStyle}
-            aria-hidden="true"
-          />
-          <div className="ml-[97px] mr-[53px] w-[260px] space-y-8">
-            <InputField
-              id="height"
-              label="身高 cm"
-              value={height}
-              placeholder="請在此輸入身高"
-              onChange={setHeight}
+    <article className="flex w-full flex-col items-center">
+      <header className="w-full bg-[#424242] text-white">
+        <div className="mx-auto flex w-full max-w-5xl flex-col gap-10 px-6 py-12 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-col items-center gap-6 text-center lg:flex-row lg:items-center lg:gap-8 lg:text-left">
+            <div
+              className="h-[88px] w-[88px] flex-shrink-0 bg-contain bg-no-repeat sm:h-[104px] sm:w-[104px] lg:h-[117px] lg:w-[117px]"
+              style={headerIconStyle}
+              aria-hidden="true"
             />
-            <InputField
-              id="weight"
-              label="體重 kg"
-              value={weight}
-              placeholder="請在此輸入體重"
-              onChange={setWeight}
-            />
+            <div className="space-y-2">
+              <h1 className="text-2xl font-semibold sm:text-3xl">BMI 計算器</h1>
+              <p className="text-base text-[#FFD366] sm:text-lg">輸入身高與體重立即取得 BMI 指標</p>
+            </div>
           </div>
-          <div className="relative flex h-[120px] w-[160px] items-center">
-            {result ? (
-              <ResultDisplay
-                result={result}
-                onRecalculate={handleCalculate}
-                onSave={handleSave}
+
+          <form
+            onSubmit={handleSubmit}
+            className="w-full max-w-xl space-y-6 rounded-3xl bg-[rgba(0,0,0,0.35)] p-6 backdrop-blur-sm sm:p-8"
+          >
+            <div className="grid gap-6 sm:grid-cols-2">
+              <InputField
+                id="height"
+                label="身高 cm"
+                value={height}
+                placeholder="請在此輸入身高"
+                onChange={setHeight}
               />
-            ) : (
-              <button
-                type="button"
-                className="flex h-[120px] w-[120px] cursor-pointer select-none items-center justify-center rounded-full bg-[#FFD366] text-2xl text-[#424242] transition hover:shadow-[0_1px_6px_3px_rgba(255,195,49,0.64)] active:bg-[#DEA921]"
-                onClick={handleCalculate}
-              >
-                看結果
-              </button>
-            )}
-          </div>
+              <InputField
+                id="weight"
+                label="體重 kg"
+                value={weight}
+                placeholder="請在此輸入體重"
+                onChange={setWeight}
+              />
+            </div>
+            <div className="flex items-center justify-center">
+              {result ? (
+                <ResultDisplay
+                  result={result}
+                  onRecalculate={handleCalculate}
+                  onSave={handleSave}
+                />
+              ) : (
+                <button
+                  type="submit"
+                  className="flex h-28 w-28 cursor-pointer select-none items-center justify-center rounded-full bg-[#FFD366] text-xl font-medium text-[#424242] transition hover:shadow-[0_1px_6px_3px_rgba(255,195,49,0.64)] active:bg-[#DEA921] sm:text-2xl"
+                >
+                  看結果
+                </button>
+              )}
+            </div>
+          </form>
         </div>
       </header>
 
-      <section className="flex w-full flex-col items-center">
-        <h2 className="mt-12 text-2xl text-[#424242]">BMI 換算紀錄</h2>
-        <button
-          type="button"
-          onClick={handleClearHistory}
-          className="mt-6 cursor-pointer rounded-[24px] border border-[#333029] bg-[#FFD466] px-[22px] py-[12px] text-lg text-[#424242] transition hover:bg-[#DEA821] active:translate-y-[1px]"
-        >
-          清除換算紀錄
-        </button>
-        <div className="flex w-full justify-center">
-          <HistoryList records={history} />
+      <section className="w-full bg-white">
+        <div className="mx-auto flex w-full max-w-5xl flex-col items-center px-6 py-12">
+          <div className="flex w-full flex-col items-center gap-4 sm:flex-row sm:justify-between">
+            <h2 className="text-2xl font-semibold text-[#424242]">BMI 換算紀錄</h2>
+            <button
+              type="button"
+              onClick={handleClearHistory}
+              className="rounded-full border border-[#333029] bg-[#FFD466] px-6 py-2 text-base font-medium text-[#424242] transition hover:bg-[#DEA821] active:translate-y-[1px]"
+            >
+              清除換算紀錄
+            </button>
+          </div>
+          <div className="mt-8 w-full overflow-x-auto">
+            <HistoryList records={history} onDelete={handleDeleteRecord} />
+          </div>
         </div>
       </section>
-    </div>
+    </article>
   );
 }

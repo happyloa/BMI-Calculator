@@ -14,8 +14,8 @@ export default function InputField({
   onChange,
 }: InputFieldProps) {
   return (
-    <label className="flex flex-col text-lg text-[#FFD366]">
-      <span>{label}</span>
+    <div className="flex flex-col text-lg text-[#FFD366]">
+      <label htmlFor={id}>{label}</label>
       <input
         id={id}
         value={value}
@@ -24,8 +24,8 @@ export default function InputField({
         inputMode="decimal"
         type="number"
         min="0"
-        className="mt-2 h-10 w-full rounded-[15px] border-2 border-[#FFD366] bg-[rgba(39,39,39,0.75)] px-4 text-xl text-white outline-none transition focus:border-white"
+        className="mt-2 h-12 w-full rounded-2xl border-2 border-[#FFD366] bg-[rgba(39,39,39,0.75)] px-4 text-xl text-white outline-none transition focus:border-white focus:ring-2 focus:ring-[#FFD366]/40"
       />
-    </label>
+    </div>
   );
 }

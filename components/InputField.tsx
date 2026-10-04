@@ -26,6 +26,8 @@ export default function InputField({
         inputMode="decimal"
         type="number"
         min="0"
+        step="any"
+        required
         className="mt-2 h-12 w-full rounded-2xl border-2 border-[#FFD366] bg-[rgba(39,39,39,0.75)] px-4 text-xl text-white outline-none transition focus:border-white focus:ring-2 focus:ring-[#FFD366]/40"
       />
     </div>

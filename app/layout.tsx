@@ -5,7 +5,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "BMI 計算器",
-  description: "使用最新 Next.js 與 Tailwind CSS 打造的 BMI 計算器",
+  description: "輸入身高與體重，計算 BMI 並儲存最近 15 筆換算紀錄。",
 };
 
 export default function RootLayout({

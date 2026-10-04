@@ -49,7 +49,7 @@ export default function HistoryList({ records, onDelete }: HistoryListProps) {
                 const flag = flagStyles[record.bmiLevel] ?? flagStyles[1];
                 return (
                   <span
-                    className={`block h-full w-1 ${flag.className}`}
+                    className={`block h-12 w-1 ${flag.className}`}
                     style={{ backgroundColor: record.color ?? flag.fallback }}
                     aria-hidden="true"
                   />

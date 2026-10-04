@@ -3,17 +3,15 @@ import { BMIResult } from "@/types/bmi";
 
 interface ResultDisplayProps {
   result: BMIResult;
-  onRecalculate: () => void;
   onSave: () => void;
 }
 
 // 基礎按鈕樣式，讓重新計算與儲存共用一致的外觀與互動效果。
 const actionButtonBase =
-  "flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-2 border-[#424242] bg-center bg-no-repeat outline-none transition hover:border-white hover:shadow-[0_1px_6px_3px_#ffffff] active:border-[#888888] active:shadow-[0_1px_6px_3px_#888888]";
+  "flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-2 border-[#424242] bg-center bg-no-repeat transition focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white hover:border-white hover:shadow-[0_1px_6px_3px_#ffffff] active:border-[#888888] active:shadow-[0_1px_6px_3px_#888888]";
 
 export default function ResultDisplay({
   result,
-  onRecalculate,
   onSave,
 }: ResultDisplayProps) {
   return (
@@ -37,16 +35,15 @@ export default function ResultDisplay({
         </div>
         <div className="mt-3 flex gap-3">
           <button
-            type="button"
+            type="submit"
             aria-label="重新計算 BMI"
-            className={`${actionButtonBase} bg-[url('/img/icons_loop.png')] hover:animate-spin-slow`}
+            className={`${actionButtonBase} bg-[url('/img/icons_loop.png')]`}
             style={{ backgroundColor: result.color }}
-            onClick={onRecalculate}
           />
           <button
             type="button"
             aria-label="儲存換算結果"
-            className={`${actionButtonBase} bg-[url('/img/save.svg')] hover:animate-spin-slow`}
+            className={`${actionButtonBase} bg-[url('/img/save.svg')]`}
             style={{ backgroundColor: result.color }}
             onClick={onSave}
           />

@@ -3,17 +3,11 @@
 @import "tailwindcss";
 
 @theme inline {
-  --animate-spin-slow: spin 1.5s linear infinite;
+  --font-sans: "Noto Sans TC", "Noto Sans", system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 :root {
   /* 宣告亮色系偏好，讓支援的瀏覽器預設使用淺色主題。 */
   color-scheme: light;
-}
-
-html,
-body {
-  /* 全域字型設定，優先使用 Noto Sans TC 確保中文字體一致。 */
-  font-family: "Noto Sans TC", "Noto Sans", system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
 }

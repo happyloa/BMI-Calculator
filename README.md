@@ -1,40 +1,40 @@
 # BMI 計算器
 
-輸入身高（公分）與體重（公斤），計算 BMI、查看體位分級，並手動儲存最近 15 筆結果。專案使用 Next.js App Router，計算與歷史紀錄都在瀏覽器端處理。
+輸入身高（公分）與體重（公斤），計算 BMI、查看體位分級，並手動儲存最近 15 筆結果。[正式網站](https://bmi-calculator-cww.pages.dev)部署在 Cloudflare Pages。
 
-## 環境與套件
+這是一個原生 HTML、CSS 與 TypeScript 靜態網站。計算與紀錄都在瀏覽器處理，沒有伺服器框架、帳號、後端資料庫或跨裝置同步。
+
+## 環境與依賴
 
 使用 Node.js 24 LTS（24.13.0 以上、低於 25）與 npm 11（11.19.0 以上、低於 12）。`.nvmrc` 指定 Node.js 24，完整依賴版本由 `package-lock.json` 固定。
 
-| 套件 | 版本 |
-| --- | --- |
-| Next.js / eslint-config-next | 16.3.8 |
-| React / React DOM | 19.3.0 |
-| TypeScript | 6.0.3 |
-| Tailwind CSS / @tailwindcss/postcss | 4.3.3 |
-| PostCSS | 8.5.28 |
-| ESLint | 9.39.5 |
-| Playwright | 1.63.0 |
+只保留 5 個直接開發依賴，正式網站不需要 Node.js 伺服器：
 
-TypeScript 保留在 6.0.3，因為 [typescript-eslint 支援範圍](https://typescript-eslint.io/users/dependency-versions/)尚未涵蓋 TypeScript 7。`next.config.ts` 使用 TypeScript API 執行建置型別檢查。ESLint 保留在 9.39.5，因為目前 Next.js 使用的 React 與 JSX 無障礙插件尚未宣告支援 ESLint 10；這是相容性限制，ESLint 9 本身已結束官方支援。Node.js 型別套件維持 24 系列，與執行環境一致。
+| 套件                              | 用途                       | 版本    |
+| --------------------------------- | -------------------------- | ------- |
+| Vite                              | 開發伺服器、靜態建置與預覽 | 8.3.2   |
+| TypeScript                        | 型別檢查                   | 7.0.2   |
+| @types/node                       | Node.js 測試與設定檔的型別 | 24.19.1 |
+| @playwright/test                  | 瀏覽器回歸測試             | 1.63.0  |
+| @fontsource-variable/noto-sans-tc | 隨網站託管繁體中文字型     | 5.3.0   |
 
 ## 快速開始
-
-第一次取得專案或依 lockfile 重建環境時：
 
 ```bash
 npm ci
 npm run dev
 ```
 
-開發網址為 <http://localhost:3000>。新增或更新套件時可使用 `npm install`，並一起提交 `package.json` 與 `package-lock.json`。
+開發網址為 <http://localhost:3000>。新增或更新套件時使用 `npm install`，並一起提交 `package.json` 與 `package-lock.json`。
 
-正式模式需先建置：
+建置與預覽：
 
 ```bash
 npm run build
-npm run start
+npm run preview
 ```
+
+預覽網址為 <http://127.0.0.1:4173>，產物在 `dist/`。Vite 的 preview 用於本機驗證；部署時直接發布 `dist/` 靜態檔案。
 
 ## 功能與紀錄保存
 
@@ -42,103 +42,70 @@ BMI 公式為體重（公斤）除以身高（公尺）的平方。結果四捨�
 
 分級採[國民健康署成人健康體位標準](https://www.hpa.gov.tw/Pages/Detail.aspx?nodeid=542&pid=9737&sid=705)：過輕為 BMI < 18.5，理想為 18.5 ≤ BMI < 24，過重為 24 ≤ BMI < 27，肥胖為 BMI ≥ 27。此分級適用於成人，兒童與青少年的標準不同。
 
-身高與體重支援小數，必須是大於 0 的有限數值。修改輸入後會清除舊結果，重新計算才能儲存，避免把舊結果誤當成新輸入的換算值。
+身高與體重支援小數，必須是大於 0 的有限數值。修改輸入後會清除舊結果，重新計算才能儲存。
 
-按下儲存按鈕後，結果才會加入歷史紀錄。紀錄由新到舊排列，最多保留 15 筆，可刪除單筆或全部清除。資料存在該分頁的 `sessionStorage`，重新整理仍會保留，關閉分頁後通常會清除。專案沒有帳號、後端資料庫或跨裝置同步。
+按下儲存按鈕後，結果才會加入歷史紀錄。紀錄由新到舊排列，最多保留 15 筆，可刪除單筆或全部清除。資料存在該分頁的 `sessionStorage`，重新整理仍會保留，關閉分頁後通常會清除。
 
 舊版 `localStorage` 紀錄會在沒有現有 session 紀錄時載入，成功寫入 `sessionStorage` 後才移除原始資料。無效紀錄會略過；JSON 損壞或儲存權限被封鎖時，畫面會顯示提示，計算器仍可使用。無法寫入瀏覽器儲存時，新紀錄只保留在目前頁面的記憶體中。
 
-介面以 Tailwind CSS 排版，支援手機與桌面；歷史表格在窄螢幕可水平捲動。中文字型使用 Google Fonts 的 Noto Sans TC，無法連線時會退回系統字型。
+介面支援手機與桌面；歷史表格可水平捲動，也能用鍵盤聚焦操作。文字可選取與複製，反白使用黃色底與深色文字，捲軸使用深色滑塊與淡黃色軌道。高對比模式使用系統顏色，減少動態效果的偏好也會生效。捲軸是否常駐顯示由瀏覽器與作業系統決定。
+
+中文字型使用思源黑體的 Google 版本 Noto Sans TC。兩者的關係可參考 [Adobe 說明](https://blog.adobe.com/en/publish/2021/04/08/source-han-sans-goes-variable)。字型透過 Fontsource 隨網站託管，以 WOFF2 和 Unicode 分段載入；訪客不需連線至 Google Fonts。無法載入時會退回本機思源黑體、微軟正黑體或系統字型。`public/favicon.svg` 是黃黑配色的指標圖示。
 
 ## 驗證
 
 ```bash
-npm run lint
-npm run typecheck
-npm test
-npm run build
-```
-
-也可一次執行以上檢查：
-
-```bash
 npm run verify
-```
-
-瀏覽器測試會啟動正式版伺服器，因此需先完成建置：
-
-```bash
 npx playwright install chromium
 npm run test:e2e
-```
-
-Playwright 使用桌面 Chromium 與手機尺寸的 Chromium，測試小數輸入、失效結果、紀錄上限、重新載入、刪除、清空、舊資料轉移及儲存失敗。手機測試是瀏覽器模擬，沒有驗證實體手機或 Safari。
-
-Pages 的靜態匯出版本也執行同一套瀏覽器測試：
-
-```bash
-npm run build:pages
-npm run test:e2e:pages
-```
-
-若要手動預覽 `out/`，執行 `npm run preview:pages` 後開啟 <http://127.0.0.1:8080>。`npm run build` 與 `npm run start` 仍提供 Node.js 伺服器版本。
-
-## 安全檢查與已知限制
-
-```bash
 npm audit
-npm audit --omit=dev
 ```
 
-本次更新後，正式依賴的 audit 結果為 0 項漏洞；完整依賴仍有 5 項 high 警告，全部來自開發工具的同一條依賴鏈：`eslint-config-next → @next/eslint-plugin-next → fast-glob → micromatch → braces`。[GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) 影響 braces 3.0.3 及更早版本，目前沒有官方修補版本。
+`verify` 執行嚴格型別檢查、Node.js 回歸測試與正式建置。Node.js 24 直接執行 TypeScript 測試，不需要另一個測試框架或轉譯工具。
 
-此依賴用於 ESLint 的專案路徑 glob 解析，本專案未設定來自使用者輸入的 glob。它仍是尚未修補的開發依賴，不應把完整 audit 宣稱為零漏洞。上游修補後需更新 lockfile 並重跑驗證；`npm audit fix --force` 目前會將 Next.js lint 設定降回 14，請勿直接執行。
+Playwright 啟動靜態產物的本機預覽，使用桌面 Chromium 與手機尺寸的 Chromium，驗證小數輸入、失效結果、紀錄上限、重新載入、刪除、清空、舊資料轉移、儲存失敗、HTML 注入防護及鍵盤操作。手機測試是瀏覽器模擬，沒有驗證實體手機或 Safari。
 
-`package.json` 明確停用 `unrs-resolver` 的 postinstall 腳本；resolver 使用 npm 安裝的可選原生 binding。乾淨安裝後須確認 lint 可以執行。
+設定環境變數 `BMI_E2E_BASE_URL` 可對部署網址執行同一套測試，不啟動本機伺服器。測試資料只存在隔離的瀏覽器儲存。
+
+## 安全與維護
+
+儲存資料在載入時重新驗證，BMI 分級與顏色從身高、體重重算。顯示紀錄使用 `textContent`，不把儲存內容當 HTML 執行。Cloudflare Pages 透過 `public/_headers` 設定 CSP、禁止嵌入頁面、MIME 類型保護及權限限制；CSP 允許動態顏色使用的 inline style，script 則僅允許本站來源。
+
+移除 Next.js 與 ESLint 工具鏈後，原有的 `braces` 漏洞依賴鏈也一併移除。本次完整 `npm audit` 結果為 0 項漏洞；這是當時的檢查結果，後續更新仍需重跑 audit 與測試。
 
 ## 專案結構
 
 ```text
-app/
-  layout.tsx        # 全域版面、語系與頁面資訊
-  page.tsx          # 首頁與頁腳
-  globals.css       # Tailwind 與字型設定
-components/
-  BMICalculator.tsx # 輸入、換算與儲存操作
-  HistoryList.tsx   # 歷史紀錄表格
-  InputField.tsx    # 身高與體重欄位
-  ResultDisplay.tsx # BMI 結果與操作按鈕
-  Footer.tsx        # 作者資訊
-hooks/
-  useBMIHistory.ts  # session 紀錄、舊資料轉移與儲存錯誤提示
-lib/
-  bmi.ts            # 計算、分級與紀錄驗證
-types/
-  bmi.ts            # 結果與歷史紀錄型別
-public/img/         # 標誌與操作圖示
-tests/             # Node.js 回歸測試
-e2e/               # Playwright 瀏覽器測試
-scripts/           # Pages 靜態匯出入口
+index.html          # 首頁、語系、頁面資訊與 favicon
+src/main.ts         # 表單、結果、紀錄操作與儲存錯誤處理
+src/style.css       # 響應式樣式、字型、反白與捲軸
+lib/bmi.ts          # 計算、分級與紀錄驗證
+types/bmi.ts        # 結果與歷史紀錄型別
+public/favicon.svg  # 網站圖示
+public/fonts-OFL.txt # 字型授權
+public/img/         # 品牌與操作圖示
+public/_headers     # Cloudflare Pages 回應標頭
+tests/              # Node.js 回歸測試
+e2e/                # Playwright 瀏覽器測試
+vite.config.ts      # 保留字型檔案，供 CSP 與快取使用
 cloudflare-pages.config.json # Pages 建置設定範本
 .github/workflows/ci.yml # 自動驗證
 ```
 
 ## CI 與部署
 
-GitHub Actions 在推送 `main` 或建立 pull request 時執行乾淨安裝、正式依賴 audit、lint、型別檢查、回歸測試，並建置、測試 Node.js 與 Pages 靜態匯出兩種版本。CI 使用 Node.js 24 與固定的 npm 版本，Action 也固定到 commit。
+GitHub Actions 在推送 `main` 或建立 pull request 時執行乾淨安裝、完整依賴 audit、型別檢查、回歸測試、正式建置與瀏覽器測試。CI 使用 Node.js 24 與固定的 npm 版本，Action 固定到 commit。
 
-正式計算器部署在 [Cloudflare Pages](https://bmi-calculator-cww.pages.dev)，從 `main` 自動建置並發布 `out/` 靜態檔案。計算與紀錄操作在瀏覽器執行，不需要 Pages Functions 或 Next.js 伺服器轉接器。[GitHub Pages](https://happyloa.github.io/BMI-Calculator/) 另外透過平台的 Jekyll 工作流程發布文件頁。
+Cloudflare Pages 從 `main` 自動建置並發布 `dist/`，不需要 Pages Functions 或框架轉接器。[GitHub Pages](https://happyloa.github.io/BMI-Calculator/) 另外透過平台的 Jekyll 工作流程發布文件頁。
 
 Pages 專案的建置設定保存在 `cloudflare-pages.config.json`，由官方 `cf pages edit` API 套用至既有 `bmi-calculator` 專案。Cloudflare 不會自動讀取此 JSON，修改範本後仍需同步帳號中的設定：
 
-| 設定 | 值 |
-| --- | --- |
-| 建置命令 | `npm install --global npm@11.19.0 && npm ci && npm run build:pages` |
-| 輸出目錄 | `out` |
-| 根目錄 | repository 根目錄 |
-| 正式與預覽環境變數 | `SKIP_DEPENDENCY_INSTALL=1` |
-| Node.js | 由 `.nvmrc` 指定 24 |
+| 設定               | 值                                                            |
+| ------------------ | ------------------------------------------------------------- |
+| 建置命令           | `npm install --global npm@11.19.0 && npm ci && npm run build` |
+| 輸出目錄           | `dist`                                                        |
+| 根目錄             | repository 根目錄                                             |
+| 正式與預覽環境變數 | `SKIP_DEPENDENCY_INSTALL=1`                                   |
+| Node.js            | 由 `.nvmrc` 指定 24                                           |
 
-`SKIP_DEPENDENCY_INSTALL` 讓 Pages 略過內建的套件安裝，改由建置命令先安裝指定 npm，再依 lockfile 安裝套件。這可避免舊 npm 忽略 `allowScripts` 與產生版本警告。`scripts/build-pages.mjs` 設定 `BMI_BUILD_TARGET=pages`，讓 Next.js 使用 `output: "export"`。部署仍需確認 Cloudflare 的建置、發布階段成功，以及正式網址載入正常。
-
-如需自行部署，可使用 Vercel 或支援此 Next.js 版本的 Node.js 平台。自行執行伺服器時，使用前述 `npm run build` 與 `npm run start`。
+`SKIP_DEPENDENCY_INSTALL` 讓 Pages 略過內建的套件安裝，改由建置命令先安裝指定 npm，再依 lockfile 安裝套件。部署需確認 Cloudflare 建置與發布成功，並驗證正式網址的功能。其他靜態託管平台也可發布 `dist/`。

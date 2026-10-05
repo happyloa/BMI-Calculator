@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: process.env.BMI_BUILD_TARGET === "pages" ? "export" : undefined,
   reactStrictMode: true,
   poweredByHeader: false,
   experimental: {

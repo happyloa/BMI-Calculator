@@ -1,0 +1,19 @@
+{
+  "build_config": {
+    "build_command": "npm install --global npm@11.19.0 && npm ci && npm run build:pages",
+    "destination_dir": "out",
+    "root_dir": ""
+  },
+  "deployment_configs": {
+    "production": {
+      "env_vars": {
+        "SKIP_DEPENDENCY_INSTALL": { "type": "plain_text", "value": "1" }
+      }
+    },
+    "preview": {
+      "env_vars": {
+        "SKIP_DEPENDENCY_INSTALL": { "type": "plain_text", "value": "1" }
+      }
+    }
+  }
+}

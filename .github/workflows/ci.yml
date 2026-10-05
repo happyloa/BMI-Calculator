@@ -31,3 +31,5 @@ jobs:
       - run: npm run verify
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
+      - run: npm run build:pages
+      - run: npm run test:e2e:pages

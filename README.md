@@ -74,6 +74,15 @@ npm run test:e2e
 
 Playwright 使用桌面 Chromium 與手機尺寸的 Chromium，測試小數輸入、失效結果、紀錄上限、重新載入、刪除、清空、舊資料轉移及儲存失敗。手機測試是瀏覽器模擬，沒有驗證實體手機或 Safari。
 
+Pages 的靜態匯出版本也執行同一套瀏覽器測試：
+
+```bash
+npm run build:pages
+npm run test:e2e:pages
+```
+
+若要手動預覽 `out/`，執行 `npm run preview:pages` 後開啟 <http://127.0.0.1:8080>。`npm run build` 與 `npm run start` 仍提供 Node.js 伺服器版本。
+
 ## 安全檢查與已知限制
 
 ```bash
@@ -109,13 +118,27 @@ types/
 public/img/         # 標誌與操作圖示
 tests/             # Node.js 回歸測試
 e2e/               # Playwright 瀏覽器測試
+scripts/           # Pages 靜態匯出入口
+cloudflare-pages.config.json # Pages 建置設定範本
 .github/workflows/ci.yml # 自動驗證
 ```
 
 ## CI 與部署
 
-GitHub Actions 在推送 `main` 或建立 pull request 時執行乾淨安裝、正式依賴 audit、lint、型別檢查、回歸測試、正式建置與瀏覽器測試。CI 使用 Node.js 24 與固定的 npm 版本，Action 也固定到 commit。
+GitHub Actions 在推送 `main` 或建立 pull request 時執行乾淨安裝、正式依賴 audit、lint、型別檢查、回歸測試，並建置、測試 Node.js 與 Pages 靜態匯出兩種版本。CI 使用 Node.js 24 與固定的 npm 版本，Action 也固定到 commit。
 
-Repository 首頁網址為 [Cloudflare Pages 上的計算器](https://bmi-calculator-cww.pages.dev)。[GitHub Pages](https://happyloa.github.io/BMI-Calculator/) 另外透過平台的 Jekyll 工作流程發布文件頁，沒有執行 Next.js 應用程式。Repository 中未提供 Cloudflare 部署設定，因此 CI 通過與推送成功仍需搭配正式環境的部署紀錄，才能確認線上版本已更新。
+正式計算器部署在 [Cloudflare Pages](https://bmi-calculator-cww.pages.dev)，從 `main` 自動建置並發布 `out/` 靜態檔案。計算與紀錄操作在瀏覽器執行，不需要 Pages Functions 或 Next.js 伺服器轉接器。[GitHub Pages](https://happyloa.github.io/BMI-Calculator/) 另外透過平台的 Jekyll 工作流程發布文件頁。
+
+Pages 專案的建置設定保存在 `cloudflare-pages.config.json`，由官方 `cf pages edit` API 套用至既有 `bmi-calculator` 專案。Cloudflare 不會自動讀取此 JSON，修改範本後仍需同步帳號中的設定：
+
+| 設定 | 值 |
+| --- | --- |
+| 建置命令 | `npm install --global npm@11.19.0 && npm ci && npm run build:pages` |
+| 輸出目錄 | `out` |
+| 根目錄 | repository 根目錄 |
+| 正式與預覽環境變數 | `SKIP_DEPENDENCY_INSTALL=1` |
+| Node.js | 由 `.nvmrc` 指定 24 |
+
+`SKIP_DEPENDENCY_INSTALL` 讓 Pages 略過內建的套件安裝，改由建置命令先安裝指定 npm，再依 lockfile 安裝套件。這可避免舊 npm 忽略 `allowScripts` 與產生版本警告。`scripts/build-pages.mjs` 設定 `BMI_BUILD_TARGET=pages`，讓 Next.js 使用 `output: "export"`。部署仍需確認 Cloudflare 的建置、發布階段成功，以及正式網址載入正常。
 
 如需自行部署，可使用 Vercel 或支援此 Next.js 版本的 Node.js 平台。自行執行伺服器時，使用前述 `npm run build` 與 `npm run start`。

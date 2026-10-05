@@ -14,6 +14,7 @@
 * {
   box-sizing: border-box;
   scrollbar-color: #424242 #fff5d9;
+  scrollbar-width: thin;
 }
 body {
   margin: 0;
@@ -302,18 +303,18 @@ footer {
   white-space: nowrap;
 }
 
-/* Preserve native scrollbar sizing; older WebKit needs pseudo-elements. */
+/* Use thin native scrollbars; older WebKit needs pseudo-elements. */
 @supports not (scrollbar-color: auto) {
   ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
+    width: 8px;
+    height: 8px;
   }
   ::-webkit-scrollbar-track {
     background: #fff5d9;
   }
   ::-webkit-scrollbar-thumb {
     background: #424242;
-    border: 3px solid #fff5d9;
+    border: 2px solid #fff5d9;
     border-radius: 999px;
   }
   ::-webkit-scrollbar-thumb:hover {
@@ -323,6 +324,7 @@ footer {
 @media (forced-colors: active) {
   * {
     scrollbar-color: auto;
+    scrollbar-width: auto;
   }
   ::selection {
     color: HighlightText;

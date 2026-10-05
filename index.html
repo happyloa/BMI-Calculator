@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="輸入身高與體重，計算 BMI 並儲存最近 15 筆換算紀錄。"
+    />
+    <meta name="theme-color" content="#424242" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>BMI 計算器</title>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div class="container hero">
+          <div class="brand">
+            <img src="/img/BMICLogo.png" width="117" height="117" alt="" />
+            <div>
+              <h1>BMI 計算器</h1>
+              <p>輸入身高與體重立即取得 BMI 指標</p>
+            </div>
+          </div>
+          <form id="calculator" novalidate>
+            <div class="fields">
+              <label for="height"
+                >身高 cm
+                <input
+                  id="height"
+                  type="number"
+                  inputmode="decimal"
+                  min="0"
+                  step="any"
+                  required
+                  placeholder="請在此輸入身高"
+                  aria-describedby="input-error"
+                />
+              </label>
+              <label for="weight"
+                >體重 kg
+                <input
+                  id="weight"
+                  type="number"
+                  inputmode="decimal"
+                  min="0"
+                  step="any"
+                  required
+                  placeholder="請在此輸入體重"
+                  aria-describedby="input-error"
+                />
+              </label>
+            </div>
+            <p id="input-error" role="alert" hidden></p>
+            <div id="result" class="result" aria-live="polite">
+              <button type="submit" class="calculate">看結果</button>
+            </div>
+          </form>
+        </div>
+      </header>
+      <section class="container history" aria-labelledby="history-heading">
+        <div class="history-heading">
+          <h2 id="history-heading">BMI 換算紀錄</h2>
+          <button id="clear" type="button" class="clear">清除換算紀錄</button>
+        </div>
+        <p id="storage-warning" role="status" hidden></p>
+        <p id="empty-history">目前沒有換算紀錄，計算完成後可以儲存結果。</p>
+        <div
+          id="history-scroll"
+          class="history-scroll"
+          tabindex="0"
+          role="region"
+          aria-label="BMI 換算紀錄表格，可水平捲動"
+          hidden
+        >
+          <table>
+            <caption class="sr-only">
+              BMI 換算紀錄清單
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col" aria-label="顏色指標"></th>
+                <th scope="col">狀態</th>
+                <th scope="col">BMI</th>
+                <th scope="col">體重 (kg)</th>
+                <th scope="col">身高 (cm)</th>
+                <th scope="col">紀錄時間</th>
+                <th scope="col">操作</th>
+              </tr>
+            </thead>
+            <tbody id="records"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <img src="/favicon.svg" width="55" height="55" alt="" />
+      <p>by 謝宗佑</p>
+    </footer>
+    <noscript
+      ><p class="container">
+        請啟用 JavaScript 以使用 BMI 計算與換算紀錄。
+      </p></noscript
+    >
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

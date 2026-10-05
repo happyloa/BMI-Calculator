@@ -13,11 +13,17 @@ const BMI_SETTINGS = [
 export function calculateBMI(height: string, weight: string): BMIResult | null {
   const parsedHeight = Number(height);
   const parsedWeight = Number(weight);
-  if (!Number.isFinite(parsedHeight) || !Number.isFinite(parsedWeight) ||
-      parsedHeight <= 0 || parsedWeight <= 0) return null;
+  if (
+    !Number.isFinite(parsedHeight) ||
+    !Number.isFinite(parsedWeight) ||
+    parsedHeight <= 0 ||
+    parsedWeight <= 0
+  )
+    return null;
 
   const bmi = parsedWeight / (parsedHeight / 100) ** 2;
-  if (!Number.isFinite(bmi) || bmi <= 0 || !Number.isFinite(bmi * 100)) return null;
+  if (!Number.isFinite(bmi) || bmi <= 0 || !Number.isFinite(bmi * 100))
+    return null;
   const rounded = Math.round(bmi * 100) / 100;
   if (rounded <= 0) return null;
 
@@ -26,8 +32,11 @@ export function calculateBMI(height: string, weight: string): BMIResult | null {
   const { color, description } = BMI_SETTINGS[bmiLevel];
   return {
     bmi: rounded.toString(),
-    bmiLevel, color, description,
-    height: height.trim(), weight: weight.trim(),
+    bmiLevel,
+    color,
+    description,
+    height: height.trim(),
+    weight: weight.trim(),
   };
 }
 
@@ -39,23 +48,38 @@ export function normalizeHistory(value: unknown): BMIHistoryRecord[] {
   let candidates: unknown[] = [];
   if (Array.isArray(value)) {
     candidates = value;
-  } else if (isObject(value) && Number.isSafeInteger(value.maxIdx) &&
-      Number(value.maxIdx) >= 0 && isObject(value.data)) {
+  } else if (
+    isObject(value) &&
+    Number.isSafeInteger(value.maxIdx) &&
+    Number(value.maxIdx) >= 0 &&
+    isObject(value.data)
+  ) {
     // 只走訪實際存在的項目，避免異常 maxIdx 造成無限迴圈。
     candidates = Object.entries(value.data)
-      .filter(([key]) => /^\d+$/.test(key) && Number(key) <= Number(value.maxIdx))
+      .filter(
+        ([key]) => /^\d+$/.test(key) && Number(key) <= Number(value.maxIdx),
+      )
       .sort(([a], [b]) => Number(b) - Number(a))
-      .map(([id, record]) => isObject(record) ? { ...record, id } : null);
+      .map(([id, record]) => (isObject(record) ? { ...record, id } : null));
   }
 
   const records: BMIHistoryRecord[] = [];
   const ids = new Set<string>();
   for (const item of candidates) {
-    if (!isObject(item) || typeof item.id !== "string" || !item.id.trim() ||
-        ids.has(item.id) || typeof item.date !== "string" || !item.date.trim() ||
-        typeof item.height !== "string" || typeof item.weight !== "string" ||
-        typeof item.bmi !== "string" || !Number.isFinite(Number(item.bmi)) ||
-        Number(item.bmi) <= 0) continue;
+    if (
+      !isObject(item) ||
+      typeof item.id !== "string" ||
+      !item.id.trim() ||
+      ids.has(item.id) ||
+      typeof item.date !== "string" ||
+      !item.date.trim() ||
+      typeof item.height !== "string" ||
+      typeof item.weight !== "string" ||
+      typeof item.bmi !== "string" ||
+      !Number.isFinite(Number(item.bmi)) ||
+      Number(item.bmi) <= 0
+    )
+      continue;
     const result = calculateBMI(item.height, item.weight);
     if (!result) continue;
     ids.add(item.id);

@@ -1,7 +1,7 @@
 {
   "build_config": {
-    "build_command": "npm install --global npm@11.19.0 && npm ci && npm run build:pages",
-    "destination_dir": "out",
+    "build_command": "npm install --global npm@11.19.0 && npm ci && npm run build",
+    "destination_dir": "dist",
     "root_dir": ""
   },
   "deployment_configs": {

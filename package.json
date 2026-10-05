@@ -3,42 +3,24 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint . --max-warnings=0",
-    "typecheck": "next typegen && tsc --noEmit",
+    "dev": "vite --host 127.0.0.1 --port 3000",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "typecheck": "tsc --noEmit",
     "test": "node --test tests/*.test.ts",
-    "verify": "npm run lint && npm run typecheck && npm test && npm run build",
-    "test:e2e": "playwright test",
-    "build:pages": "node scripts/build-pages.mjs",
-    "preview:pages": "sirv out --host 127.0.0.1",
-    "test:e2e:pages": "playwright test --config playwright.pages.config.ts"
-  },
-  "dependencies": {
-    "next": "16.3.8",
-    "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "verify": "npm run typecheck && npm test && npm run build",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0",
-    "@tailwindcss/postcss": "4.3.3",
+    "@fontsource-variable/noto-sans-tc": "5.3.0",
     "@types/node": "24.19.1",
-    "@types/react": "19.3.0",
-    "@types/react-dom": "19.3.0",
-    "eslint": "9.39.5",
-    "eslint-config-next": "16.3.8",
-    "postcss": "8.5.28",
-    "sirv-cli": "3.0.1",
-    "tailwindcss": "4.3.3",
-    "typescript": "6.0.3"
+    "typescript": "7.0.2",
+    "vite": "8.3.2"
   },
   "engines": {
     "node": ">=24.13.0 <25",
     "npm": ">=11.19.0 <12"
-  },
-  "allowScripts": {
-    "unrs-resolver": false
   },
   "type": "module"
 }
